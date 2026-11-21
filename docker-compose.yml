@@ -1,0 +1,20 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: coffee-manic-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-coffee_manic}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-coffee_manic}
+      POSTGRES_DB: ${POSTGRES_DB:-coffee_manic}
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-coffee_manic}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

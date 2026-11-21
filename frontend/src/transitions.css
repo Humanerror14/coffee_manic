@@ -1,0 +1,573 @@
+/**
+ * transitions.css
+ * Unified Transition & Animation System — Smooth, elegant, accessible
+ * Coffee Manic Design System
+ */
+
+/* ========================================================================
+   TRANSITION TIMING & EASING
+   ======================================================================== */
+
+:root {
+  /* Animation Durations */
+  --transition-quick: 120ms;    /* Instant feedback */
+  --transition-smooth: 200ms;   /* Smooth hover/focus */
+  --transition-standard: 300ms; /* Page transitions */
+  --transition-slow: 500ms;     /* Choreography */
+
+  /* Easing Functions */
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);        /* Deceleration */
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);     /* Smooth both ends */
+  --ease-coffee-pour: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth cascade */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);  /* Gentle bounce */
+}
+
+/* ========================================================================
+   GENERAL ELEMENT TRANSITIONS
+   ======================================================================== */
+
+/* Links & text */
+a, .link {
+  transition: color var(--transition-smooth) var(--ease-out);
+}
+
+/* Backgrounds */
+.bg-transition {
+  transition: background-color var(--transition-smooth) var(--ease-out);
+}
+
+/* Borders */
+.border-transition {
+  transition: border-color var(--transition-smooth) var(--ease-out);
+}
+
+/* Opacity fade */
+.fade-transition {
+  transition: opacity var(--transition-smooth) var(--ease-out);
+}
+
+/* ========================================================================
+   SMOOTH PAGE NAVIGATION
+   ======================================================================== */
+
+/* Page container */
+.page-container {
+  animation: pageEnter var(--transition-standard) var(--ease-out);
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+
+/* ========================================================================
+   HERO SECTION ENTRANCE
+   ======================================================================== */
+
+.hero-content-col {
+  animation: slideInUp 0.6s var(--ease-out) 0ms;
+}
+
+.hero-visual-col {
+  animation: slideInDown 0.6s var(--ease-out) 100ms;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-32px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================================================
+   CARD INTERACTIONS
+   ======================================================================== */
+
+.card-smooth {
+  transition: all var(--transition-smooth) var(--ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .card-smooth:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.2);
+    border-color: rgba(229, 138, 56, 0.4);
+  }
+}
+
+.card-smooth:active {
+  transform: translateY(-2px);
+  transition-duration: var(--transition-quick);
+}
+
+/* ========================================================================
+   FORM FIELD TRANSITIONS
+   ======================================================================== */
+
+.form-input {
+  transition: border-color var(--transition-smooth) var(--ease-out),
+              box-shadow var(--transition-smooth) var(--ease-out),
+              background-color var(--transition-smooth) var(--ease-out);
+}
+
+.form-input:focus {
+  border-color: #E58A38;
+  box-shadow: 0 0 0 4px rgba(229, 138, 56, 0.12);
+}
+
+.form-input::placeholder {
+  transition: color var(--transition-smooth) var(--ease-out);
+}
+
+.form-input:focus::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* Error state transition */
+.form-input.has-error {
+  border-color: #F44336;
+  animation: shake 0.4s var(--ease-coffee-pour);
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
+/* ========================================================================
+   FILTER & CHIP INTERACTIONS
+   ======================================================================== */
+
+.chip, .pill {
+  transition: all var(--transition-smooth) var(--ease-out);
+}
+
+.chip:hover {
+  background-color: rgba(229, 138, 56, 0.2);
+  border-color: #E58A38;
+  color: #FAF6EE;
+}
+
+.chip.active {
+  background-color: #E58A38;
+  border-color: #E58A38;
+  color: #ffffff;
+  transform: scale(1.02);
+}
+
+/* ========================================================================
+   MODAL & OVERLAY TRANSITIONS
+   ======================================================================== */
+
+.modal-overlay {
+  animation: fadeIn var(--transition-standard) var(--ease-out);
+}
+
+.modal-content {
+  animation: zoomIn var(--transition-standard) var(--ease-spring);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Close modal animation */
+.modal-overlay.is-closing {
+  animation: fadeOut var(--transition-standard) var(--ease-out);
+}
+
+.modal-overlay.is-closing .modal-content {
+  animation: zoomOut var(--transition-standard) var(--ease-out);
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes zoomOut {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+}
+
+/* ========================================================================
+   DROPDOWN & MENU TRANSITIONS
+   ======================================================================== */
+
+.dropdown-menu {
+  animation: slideDownIn var(--transition-smooth) var(--ease-out);
+  transform-origin: top;
+}
+
+.dropdown-menu.is-closing {
+  animation: slideDownOut var(--transition-smooth) var(--ease-out);
+}
+
+@keyframes slideDownIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDownOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+/* ========================================================================
+   TOAST & NOTIFICATION TRANSITIONS
+   ======================================================================== */
+
+.toast {
+  animation: slideInUp var(--transition-smooth) var(--ease-out);
+}
+
+.toast.is-closing {
+  animation: slideOutDown var(--transition-smooth) var(--ease-out);
+}
+
+@keyframes slideOutDown {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+
+/* ========================================================================
+   LIST ITEM STAGGER ANIMATIONS
+   ======================================================================== */
+
+.list-item {
+  animation: listItemEnter var(--transition-standard) var(--ease-out);
+}
+
+.list-item:nth-child(1) { animation-delay: 0ms; }
+.list-item:nth-child(2) { animation-delay: 60ms; }
+.list-item:nth-child(3) { animation-delay: 120ms; }
+.list-item:nth-child(4) { animation-delay: 180ms; }
+.list-item:nth-child(5) { animation-delay: 240ms; }
+.list-item:nth-child(6) { animation-delay: 300ms; }
+
+@keyframes listItemEnter {
+  from {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* ========================================================================
+   LOADING STATE ANIMATIONS
+   ======================================================================== */
+
+/* Pulse effect for loading */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.pulse {
+  animation: pulse 2s var(--ease-in-out) infinite;
+}
+
+/* Spinner */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+}
+
+/* Shimmer for skeleton screens */
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.shimmer {
+  animation: shimmer 2s infinite;
+}
+
+/* ========================================================================
+   SCROLL-TRIGGERED ANIMATIONS
+   ======================================================================== */
+
+/* Fade in on scroll */
+.fade-in-scroll {
+  opacity: 0;
+  transition: opacity var(--transition-standard) var(--ease-out);
+}
+
+.fade-in-scroll.is-visible {
+  opacity: 1;
+}
+
+/* Slide up on scroll */
+.slide-up-scroll {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--transition-standard) var(--ease-out),
+              transform var(--transition-standard) var(--ease-out);
+}
+
+.slide-up-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Scale up on scroll */
+.scale-up-scroll {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity var(--transition-standard) var(--ease-out),
+              transform var(--transition-standard) var(--ease-out);
+}
+
+.scale-up-scroll.is-visible {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ========================================================================
+   NAVBAR TRANSITIONS
+   ======================================================================== */
+
+.navbar-canvas {
+  transition: background-color var(--transition-smooth) var(--ease-out),
+              box-shadow var(--transition-smooth) var(--ease-out);
+}
+
+.navbar-canvas.is-scrolled {
+  background-color: rgba(41, 20, 11, 0.95);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+.nav-link {
+  transition: color var(--transition-smooth) var(--ease-out);
+  position: relative;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #E58A38;
+  border-radius: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-smooth) var(--ease-out);
+}
+
+.nav-link.is-active::after {
+  opacity: 1;
+}
+
+@media (hover: hover) {
+  .nav-link:hover::after {
+    opacity: 1;
+  }
+}
+
+/* ========================================================================
+   SEARCH & FILTER TRANSITIONS
+   ======================================================================== */
+
+.search-box {
+  transition: all var(--transition-smooth) var(--ease-out);
+}
+
+.search-box:focus-within {
+  background-color: rgba(255, 255, 255, 0.12);
+  border-color: #E58A38;
+  box-shadow: 0 0 0 4px rgba(229, 138, 56, 0.12);
+}
+
+/* ========================================================================
+   HERO VISUAL ANIMATIONS
+   ======================================================================== */
+
+/* Coffee cup subtle float */
+@keyframes floatSteam {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: translateY(-8px) scale(1.02);
+    opacity: 0.8;
+  }
+}
+
+.coffee-hero-visual-wrapper {
+  animation: floatSteam 3s var(--ease-coffee-pour) infinite;
+}
+
+/* Glow pulse */
+@keyframes glowPulse {
+  0%, 100% {
+    box-shadow: 0 0 30px rgba(229, 138, 56, 0.2);
+  }
+  50% {
+    box-shadow: 0 0 50px rgba(229, 138, 56, 0.4);
+  }
+}
+
+.ambient-glow {
+  animation: glowPulse 4s var(--ease-in-out) infinite;
+}
+
+/* ========================================================================
+   REDUCED MOTION SUPPORT (CRITICAL)
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep focus visible even with reduced motion */
+  *:focus-visible {
+    animation: none;
+    transition: none;
+    outline: 3px solid #E58A38;
+    outline-offset: 2px;
+  }
+}
+
+/* ========================================================================
+   PERFORMANCE OPTIMIZATION
+   ======================================================================== */
+
+/* GPU acceleration for smooth animations */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Prevent layout thrashing */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* ========================================================================
+   UTILITY TRANSITION CLASSES
+   ======================================================================== */
+
+.transition-none {
+  transition: none !important;
+}
+
+.transition-fast {
+  transition: all var(--transition-quick) var(--ease-out);
+}
+
+.transition-smooth {
+  transition: all var(--transition-smooth) var(--ease-out);
+}
+
+.transition-standard {
+  transition: all var(--transition-standard) var(--ease-out);
+}
+
+.transition-slow {
+  transition: all var(--transition-slow) var(--ease-out);
+}

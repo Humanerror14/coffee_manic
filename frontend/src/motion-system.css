@@ -1,0 +1,1036 @@
+/**
+ * motion-system.css
+ * Coffee Manic — Precision Motion Layer
+ *
+ * Lapisan gerak terpadu untuk seluruh fitur:
+ * - Token durasi & easing (konsisten, bukan "transition: all")
+ * - Transisi antar-rute (exit → enter) + progress line
+ * - Scroll reveal & stagger yang presisi
+ * - Interaksi kartu (spotlight mengikuti kursor)
+ * - Bottom sheet filter mobile
+ * - Skeleton loading, chip, tombol, alert
+ *
+ * Semua animasi menghormati prefers-reduced-motion.
+ * Dimuat terakhir agar dapat menyempurnakan lapisan sebelumnya.
+ */
+
+/* ==========================================================================
+   1. MOTION TOKENS
+   ========================================================================== */
+
+:root {
+  --m-dur-1: 140ms;   /* umpan balik instan */
+  --m-dur-2: 240ms;   /* hover / fokus */
+  --m-dur-3: 380ms;   /* transisi elemen */
+  --m-dur-4: 560ms;   /* koreografi halaman */
+
+  --m-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --m-ease-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --m-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --m-ease-spring: cubic-bezier(0.34, 1.42, 0.64, 1);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Sudut kanvas tetap terpotong rapi tanpa membuat scroll container,
+   sehingga navbar sticky tetap menempel ke viewport. */
+.app-canvas {
+  overflow: clip;
+}
+
+/* ==========================================================================
+   2. TRANSISI ANTAR-HALAMAN
+   ========================================================================== */
+
+.route-stage {
+  position: relative;
+}
+
+/* Transisi rute hanya memakai opacity. Transform/filter/will-change pada
+   wadah ini akan menciptakan containing block baru dan menggeser elemen
+   `position: fixed` (bottom sheet filter) dari viewport. Gerak vertikal
+   tetap terasa dari animasi kartu, hero, dan reveal di dalam halaman. */
+.route-stage.phase-enter {
+  animation: routeEnter var(--m-dur-4) var(--m-ease-out) both;
+}
+
+.route-stage.phase-exit {
+  animation: routeExit var(--m-dur-1) var(--m-ease-in) both;
+  pointer-events: none;
+}
+
+.route-stage.phase-idle {
+  animation: none;
+}
+
+@keyframes routeEnter {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes routeExit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+/* Garis progres tipis saat rute berganti */
+.route-progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  transform-origin: 0 50%;
+  background: linear-gradient(90deg, #b36a1f, #e58a38 45%, #ffd6a1);
+  box-shadow: 0 0 14px rgba(229, 138, 56, 0.65);
+  pointer-events: none;
+  z-index: 60;
+  animation: routeSweep 640ms var(--m-ease-out) both;
+}
+
+@keyframes routeSweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 1;
+  }
+  70% {
+    transform: scaleX(0.86);
+    opacity: 1;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 0;
+  }
+}
+
+/* Indikator progres baca — menempel di tepi bawah navbar sticky */
+.scroll-progress {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.scroll-progress-fill {
+  height: 100%;
+  transform-origin: 0 50%;
+  transform: scaleX(0);
+  background: linear-gradient(90deg, #b36a1f, #e58a38 45%, #ffd6a1);
+  box-shadow: 0 0 10px rgba(229, 138, 56, 0.5);
+  transition: transform 90ms linear;
+}
+
+/* ==========================================================================
+   3. REVEAL SAAT SCROLL
+   ========================================================================== */
+
+.reveal {
+  opacity: 0;
+  transform: translate3d(var(--rv-x, 0px), var(--rv-y, 22px), 0) scale(var(--rv-scale, 1));
+  transition:
+    opacity var(--rv-dur, 620ms) var(--m-ease-out) var(--rv-delay, 0ms),
+    transform var(--rv-dur, 620ms) var(--m-ease-out) var(--rv-delay, 0ms);
+}
+
+.reveal:not(.is-visible) {
+  will-change: opacity, transform;
+}
+
+.reveal.is-visible {
+  opacity: 1;
+  transform: translate3d(0, 0, 0) scale(1);
+}
+
+/* ==========================================================================
+   4. NAVBAR: INDIKATOR AKTIF TERUKUR + STATE SCROLL
+   ========================================================================== */
+
+.navbar-canvas {
+  position: sticky;
+  top: 0;
+  z-index: 120;
+  transition:
+    background-color var(--m-dur-3) var(--m-ease-out),
+    box-shadow var(--m-dur-3) var(--m-ease-out),
+    border-color var(--m-dur-3) var(--m-ease-out),
+    backdrop-filter var(--m-dur-3) var(--m-ease-out);
+}
+
+.navbar-canvas.is-scrolled {
+  background-color: rgba(22, 11, 5, 0.86);
+  border-bottom: 1px solid rgba(229, 138, 56, 0.14);
+  box-shadow: 0 14px 34px rgba(8, 4, 1, 0.4);
+  backdrop-filter: blur(16px) saturate(1.15);
+  -webkit-backdrop-filter: blur(16px) saturate(1.15);
+}
+
+.nav-menu {
+  position: relative;
+}
+
+/* Indikator tunggal menggantikan garis per-link agar transisinya presisi */
+.nav-menu .nav-link::after {
+  display: none !important;
+}
+
+.nav-indicator {
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  height: 2px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #e58a38, #f7c489);
+  box-shadow: 0 0 10px rgba(229, 138, 56, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 420ms var(--m-ease-out),
+    width 420ms var(--m-ease-out),
+    opacity var(--m-dur-2) var(--m-ease-out);
+}
+
+.nav-indicator.is-visible {
+  opacity: 1;
+}
+
+.btn-link-nav,
+.user-chip,
+.btn-text-subtle {
+  transition:
+    color var(--m-dur-2) var(--m-ease-out),
+    background-color var(--m-dur-2) var(--m-ease-out),
+    border-color var(--m-dur-2) var(--m-ease-out);
+}
+
+.user-chip:hover {
+  background: rgba(229, 138, 56, 0.16);
+  border-color: rgba(229, 138, 56, 0.42);
+  color: #ffffff;
+}
+
+/* ==========================================================================
+   5. KARTU KEDAI: SPOTLIGHT + AFFORDANCE
+   ========================================================================== */
+
+.card-enter {
+  animation: cardEnter 560ms var(--m-ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 60ms);
+}
+
+@keyframes cardEnter {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.shop-card-canvas {
+  isolation: isolate;
+  transition:
+    transform var(--m-dur-3) var(--m-ease-out),
+    border-color var(--m-dur-3) var(--m-ease-out),
+    box-shadow var(--m-dur-3) var(--m-ease-out),
+    background-color var(--m-dur-3) var(--m-ease-out);
+}
+
+.shop-card-canvas > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .shop-card-canvas:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.shop-card-canvas:active {
+  transform: translateY(-1px) scale(0.995);
+  transition-duration: var(--m-dur-1);
+}
+
+.shop-card-title a {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition:
+    color var(--m-dur-2) var(--m-ease-out),
+    background-size var(--m-dur-3) var(--m-ease-out);
+}
+
+.shop-card-title a:hover {
+  background-size: 100% 1px;
+}
+
+.shop-cta-link .card-arrow-icon,
+.catalog-browse-link .iconoir,
+.btn-pill-cta .iconoir,
+.category-pill-outline .iconoir {
+  transition: transform var(--m-dur-3) var(--m-ease-spring);
+}
+
+.shop-card-canvas:hover .card-arrow-icon,
+.shop-cta-link:hover .card-arrow-icon {
+  transform: translate(2px, -2px);
+}
+
+.shop-cta-link {
+  transition: color var(--m-dur-2) var(--m-ease-out), gap var(--m-dur-3) var(--m-ease-out);
+}
+
+.shop-cta-link:hover {
+  gap: 0.75rem;
+}
+
+/* ==========================================================================
+   6. TOMBOL, CHIP, INPUT — UMPAN BALIK PRESISI
+   ========================================================================== */
+
+.button,
+.btn-pill-cta,
+.btn-outline-pill,
+.btn-link-nav,
+.action-icon-btn,
+.category-pill-outline,
+.catalog-browse-link,
+.chip,
+.search-pill-submit,
+.btn-text-subtle,
+.link-button,
+.clear-input-btn {
+  transition:
+    background-color var(--m-dur-2) var(--m-ease-out),
+    border-color var(--m-dur-2) var(--m-ease-out),
+    color var(--m-dur-2) var(--m-ease-out),
+    box-shadow var(--m-dur-2) var(--m-ease-out),
+    transform var(--m-dur-1) var(--m-ease-spring);
+}
+
+/* Kolom filter & sidebar menempel di bawah navbar sticky */
+@media (min-width: 901px) {
+  .filters-sidebar,
+  .detail-sidebar-col {
+    top: 112px;
+  }
+}
+
+.button:active,
+.btn-pill-cta:active,
+.btn-outline-pill:active,
+.action-icon-btn:active,
+.category-pill-outline:active,
+.search-pill-submit:active,
+.chip:active,
+.catalog-browse-link:active {
+  transform: scale(0.97);
+}
+
+.chip-toggle {
+  transition:
+    background-color var(--m-dur-2) var(--m-ease-out),
+    border-color var(--m-dur-2) var(--m-ease-out),
+    color var(--m-dur-2) var(--m-ease-out),
+    transform var(--m-dur-2) var(--m-ease-spring),
+    box-shadow var(--m-dur-2) var(--m-ease-out);
+}
+
+.chip-toggle.active {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(229, 138, 56, 0.28);
+}
+
+.chip-toggle svg {
+  animation: chipCheck var(--m-dur-3) var(--m-ease-spring) both;
+}
+
+@keyframes chipCheck {
+  from {
+    opacity: 0;
+    transform: scale(0.35) rotate(-24deg);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+.active-filter-badge {
+  animation: pillPop 320ms var(--m-ease-spring) both;
+}
+
+@keyframes pillPop {
+  from {
+    opacity: 0;
+    transform: scale(0.78) translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.active-filter-badge button {
+  transition: color var(--m-dur-1) var(--m-ease-out), transform var(--m-dur-2) var(--m-ease-spring);
+}
+
+.active-filter-badge button:hover {
+  color: #ffffff;
+  transform: rotate(90deg);
+}
+
+/* Fokus input bercahaya */
+.search-pill-wrapper,
+.search-box-inner input,
+.field input,
+.field textarea,
+.field select,
+.form-input {
+  transition:
+    border-color var(--m-dur-2) var(--m-ease-out),
+    box-shadow var(--m-dur-3) var(--m-ease-out),
+    background-color var(--m-dur-2) var(--m-ease-out);
+}
+
+.search-pill-wrapper:focus-within,
+.search-box-inner input:focus,
+.field input:focus,
+.field textarea:focus,
+.field select:focus,
+.form-input:focus {
+  box-shadow: 0 0 0 4px rgba(229, 138, 56, 0.14);
+}
+
+/* ==========================================================================
+   7. FILTER MOBILE BOTTOM SHEET
+   ========================================================================== */
+
+.explore-mobile-bar {
+  display: none;
+}
+
+.sheet-backdrop,
+.sheet-handle,
+.sheet-close,
+.sheet-apply,
+.sheet-save-row {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .explore-mobile-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin-bottom: 1.1rem;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+  }
+
+  .mobile-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    min-height: 44px;
+    padding: 0.55rem 1.1rem;
+    border-radius: 9999px;
+    border: 1px solid rgba(229, 138, 56, 0.4);
+    background: rgba(229, 138, 56, 0.14);
+    color: #f2ad69;
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition:
+      background-color var(--m-dur-2) var(--m-ease-out),
+      color var(--m-dur-2) var(--m-ease-out),
+      transform var(--m-dur-1) var(--m-ease-spring);
+  }
+
+  .mobile-filter-btn:active {
+    transform: scale(0.97);
+  }
+
+  .mobile-filter-count {
+    margin-left: 0.1rem;
+    min-width: 1.35rem;
+    height: 1.35rem;
+    padding: 0 0.35rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #e58a38;
+    color: #1a0b05;
+    font-size: 0.72rem;
+    font-weight: 700;
+  }
+
+  .mobile-results-count {
+    padding-right: 0.85rem;
+    font-size: 0.82rem;
+    color: #c9b9ab;
+  }
+
+  .filters-sidebar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: auto;
+    z-index: 240;
+    max-height: 88vh;
+    margin: 0;
+    padding: 0.5rem 1rem calc(1rem + env(safe-area-inset-bottom));
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    background: #ffffff;
+    border-top: 1px solid #e2e8f0;
+    border-radius: 28px 28px 0 0;
+    box-shadow: 0 -20px 48px rgba(15, 23, 42, 0.18);
+    transform: translateY(105%);
+    transition: transform 460ms var(--m-ease-out);
+  }
+
+  .filters-sidebar.is-open {
+    transform: translateY(0);
+  }
+
+  .filters-sidebar .filters-card {
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    padding: 0.5rem 0.25rem 0;
+    gap: 1.1rem;
+  }
+
+  .filters-card-head {
+    border-bottom: none;
+    padding-bottom: 0.25rem;
+  }
+
+  .filters-title {
+    font-size: 1.2rem;
+    font-family: var(--font-serif);
+  }
+
+  .sheet-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: 0.35rem auto 0.75rem;
+    border-radius: 9999px;
+    background: #cbd5e1;
+  }
+
+  .sheet-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 9999px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    color: #1e1e2d;
+    cursor: pointer;
+  }
+
+  .sheet-save-row {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: sticky;
+    bottom: 0;
+    padding: 0.9rem 0 0.35rem;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0), #ffffff 32%);
+  }
+
+  .sheet-apply {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 48px;
+    border: none;
+    border-radius: 12px;
+    background: #1e1e2d;
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 4px 14px rgba(15, 23, 42, 0.15);
+    transition: transform var(--m-dur-1) var(--m-ease-spring), box-shadow var(--m-dur-2) var(--m-ease-out);
+  }
+
+  .sheet-apply:active {
+    transform: scale(0.98);
+  }
+
+  .sheet-backdrop {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 230;
+    background: rgba(15, 23, 42, 0.45);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity var(--m-dur-3) var(--m-ease-out);
+  }
+
+  .sheet-backdrop.is-open {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  html.sheet-open,
+  html.sheet-open body,
+  html.sheet-open .app-canvas {
+    overflow: hidden;
+  }
+}
+
+/* ==========================================================================
+   8. SKELETON & STATE
+   ========================================================================== */
+
+.skeleton-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-height: 230px;
+  padding: 1.5rem;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.skeleton-card .skeleton {
+  border-radius: 6px;
+}
+
+.skeleton-card .skeleton--badge {
+  height: 20px;
+  width: 34%;
+  border-radius: 9999px;
+}
+
+.skeleton-card .skeleton--title {
+  height: 24px;
+  width: 68%;
+}
+
+.skeleton-card .skeleton--line {
+  height: 12px;
+  width: 100%;
+}
+
+.skeleton-card .skeleton--line-short {
+  height: 12px;
+  width: 55%;
+}
+
+.skeleton-card .skeleton--footer {
+  margin-top: auto;
+  height: 16px;
+  width: 45%;
+}
+
+.grid > .reveal {
+  min-width: 0;
+}
+
+/* State box masuk dengan lembut */
+.canvas-state-box,
+.canvas-alert-box,
+.loading-state,
+.empty-box {
+  animation: stateIn var(--m-dur-3) var(--m-ease-out) both;
+}
+
+@keyframes stateIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.alert {
+  animation: alertIn 380ms var(--m-ease-spring) both;
+}
+
+@keyframes alertIn {
+  from {
+    opacity: 0;
+    transform: translateY(-7px) scale(0.985);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ==========================================================================
+   9. DETAIL KEDAI: BAR RATING & DAFTAR ULASAN
+   ========================================================================== */
+
+.bar-fill {
+  transform-origin: left center;
+  animation: barGrow 1s var(--m-ease-out) backwards;
+}
+
+.category-bar-row:nth-child(1) .bar-fill { animation-delay: 60ms; }
+.category-bar-row:nth-child(2) .bar-fill { animation-delay: 130ms; }
+.category-bar-row:nth-child(3) .bar-fill { animation-delay: 200ms; }
+.category-bar-row:nth-child(4) .bar-fill { animation-delay: 270ms; }
+.category-bar-row:nth-child(5) .bar-fill { animation-delay: 340ms; }
+
+@keyframes barGrow {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.review-item {
+  animation: itemRise 520ms var(--m-ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 55ms);
+  transition:
+    border-color var(--m-dur-2) var(--m-ease-out),
+    background-color var(--m-dur-2) var(--m-ease-out),
+    transform var(--m-dur-2) var(--m-ease-out);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .review-item:hover {
+    border-color: rgba(229, 138, 56, 0.4);
+    transform: translateY(-2px);
+  }
+}
+
+@keyframes itemRise {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rating-input-row {
+  transition:
+    border-color var(--m-dur-2) var(--m-ease-out),
+    background-color var(--m-dur-2) var(--m-ease-out),
+    transform var(--m-dur-2) var(--m-ease-out);
+}
+
+.rating-input-row:hover {
+  border-color: rgba(229, 138, 56, 0.38);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Bintang interaktif: umpan balik hover presisi tanpa loncatan tata letak */
+.star-interactive-btn {
+  transition:
+    color var(--m-dur-1) var(--m-ease-out),
+    transform var(--m-dur-2) var(--m-ease-spring);
+  border-radius: 50%;
+}
+
+.star-interactive-btn:hover {
+  transform: translateY(-1px) scale(1.18);
+}
+
+.star-interactive-btn:active {
+  transform: scale(0.92);
+  transition-duration: var(--m-dur-1);
+}
+
+.star-interactive-btn:focus-visible {
+  outline-offset: 1px;
+}
+
+.stars-track {
+  gap: 3px;
+}
+
+/* Detail: skeleton saat memuat profil kedai */
+.detail-skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding: 1.5rem 0 3rem;
+}
+
+.detail-skeleton .skeleton--hero {
+  height: 190px;
+  border-radius: 20px;
+}
+
+.detail-skeleton .detail-skeleton-cols {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 2rem;
+}
+
+.detail-skeleton .detail-skeleton-main,
+.detail-skeleton .detail-skeleton-side {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.detail-skeleton .skeleton--block {
+  height: 140px;
+  border-radius: 16px;
+}
+
+@media (max-width: 900px) {
+  .detail-skeleton .detail-skeleton-cols {
+    grid-template-columns: 1fr;
+  }
+
+  .detail-skeleton .detail-skeleton-side {
+    display: none;
+  }
+}
+
+/* ==========================================================================
+   10. ADMIN: BARIS & BUSY STATE
+   ========================================================================== */
+
+.admin-row {
+  animation: itemRise 420ms var(--m-ease-out) backwards;
+  animation-delay: calc(var(--i, 0) * 35ms);
+  transition: background-color var(--m-dur-2) var(--m-ease-out);
+}
+
+.admin-row:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.button.is-busy {
+  cursor: progress;
+  opacity: 0.75;
+}
+
+.button.is-busy::after {
+  content: '';
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  border-top-color: currentColor;
+  animation: mSpin 0.7s linear infinite;
+}
+
+@keyframes mSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================================================
+   11. HALAMAN AUTH & PROFIL
+   ========================================================================== */
+
+.auth-card,
+.profile-card {
+  animation: cardLift 620ms var(--m-ease-out) both;
+}
+
+@keyframes cardLift {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.auth-icon {
+  animation: iconSettle 700ms var(--m-ease-spring) 80ms both;
+}
+
+@keyframes iconSettle {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) rotate(-8deg) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.profile-avatar {
+  transition: transform var(--m-dur-3) var(--m-ease-spring);
+}
+
+.profile-avatar:hover {
+  transform: scale(1.06) rotate(-3deg);
+}
+
+/* ==========================================================================
+   12. HERO BERANDA — STAGGER EDITORIAL
+   ========================================================================== */
+
+.hero-content-col {
+  animation: none;
+}
+
+.hero-visual-col {
+  animation: heroVisualIn 900ms var(--m-ease-out) 120ms both;
+}
+
+@keyframes heroVisualIn {
+  from {
+    opacity: 0;
+    transform: translateY(-18px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.hero-content-col > * {
+  animation: heroRise 700ms var(--m-ease-out) both;
+}
+
+.hero-content-col > *:nth-child(1) { animation-delay: 40ms; }
+.hero-content-col > *:nth-child(2) { animation-delay: 100ms; }
+.hero-content-col > *:nth-child(3) { animation-delay: 160ms; }
+.hero-content-col > *:nth-child(4) { animation-delay: 220ms; }
+.hero-content-col > *:nth-child(5) { animation-delay: 280ms; }
+.hero-content-col > *:nth-child(6) { animation-delay: 340ms; }
+
+@keyframes heroRise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.stat-unit .stat-number {
+  font-variant-numeric: tabular-nums;
+}
+
+.category-pill-outline:hover {
+  transform: translateY(-2px);
+}
+
+/* Cangkir induk tidak ikut mengapung; hanya uap dan glow yang beranimasi. */
+.coffee-hero-visual-wrapper {
+  animation: none;
+}
+
+/* Target anchor tidak tertutup navbar sticky */
+#main-content,
+#reviews-section {
+  scroll-margin-top: 112px;
+}
+
+/* Fokus dipindahkan otomatis ke <main> saat rute berganti.
+   Outline pada wadah disembunyikan, tetapi tetap tampil untuk navigasi
+   keyboard (focus-visible) agar aksesibilitas tidak hilang. */
+#main-content:focus:not(:focus-visible) {
+  outline: none;
+}
+
+#main-content:focus-visible {
+  outline: 3px solid #e58a38;
+  outline-offset: -3px;
+}
+
+/* ==========================================================================
+   13. AKSESIBILITAS & PENGURANGAN GERAK
+   ========================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .route-stage.phase-enter,
+  .route-stage.phase-exit,
+  .route-progress,
+  .hero-content-col > *,
+  .hero-visual-col,
+  .auth-card,
+  .profile-card,
+  .auth-icon,
+  .alert,
+  .canvas-state-box,
+  .canvas-alert-box,
+  .loading-state,
+  .empty-box,
+  .review-item,
+  .admin-row,
+  .card-enter,
+  .bar-fill,
+  .chip-toggle svg,
+  .active-filter-badge {
+    animation: none !important;
+  }
+
+  .reveal {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .scroll-progress-fill,
+  .nav-indicator,
+  .bar-fill,
+  .shop-card-canvas,
+  .filters-sidebar,
+  .sheet-backdrop {
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Fokus keyboard tetap jelas di atas animasi */
+.route-stage :focus-visible,
+.filters-sidebar :focus-visible {
+  outline: 3px solid #e58a38;
+  outline-offset: 3px;
+}

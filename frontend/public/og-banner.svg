@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#120904" />
+  <radialGradient id="grad" cx="0.5" cy="0.5" r="0.8">
+    <stop offset="0%" stop-color="#2c1a11" />
+    <stop offset="100%" stop-color="#120904" />
+  </radialGradient>
+  <rect width="1200" height="630" fill="url(#grad)" />
+  <text x="600" y="315" font-family="Playfair Display, sans-serif" font-size="80" fill="#FCECC8" text-anchor="middle" font-weight="700">Coffee Manic</text>
+  <text x="600" y="400" font-family="Plus Jakarta Sans, sans-serif" font-size="32" fill="#D4833C" text-anchor="middle">Kedai Kopi Artisanal di Lhoksukon</text>
+</svg>

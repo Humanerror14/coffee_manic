@@ -1,0 +1,8 @@
+{
+  "enabledPlugins": {
+    "frontend-design@anthropic-plugin-directory": true,
+    "anti-ai-writing@anthropic-plugin-directory": true,
+    "skill-creator@anthropic-plugin-directory": true,
+    "superdesign@anthropic-plugin-directory": true
+  }
+}

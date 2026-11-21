@@ -1,0 +1,569 @@
+/**
+ * performance.css
+ * Phase 2 — Performance & Mobile-First optimizations untuk Coffee Manic
+ * Tanggal: 7 November 2026
+ *
+ * Includes:
+ * - Image optimization (aspect ratio containers, lazy loading support)
+ * - Cumulative Layout Shift (CLS) prevention
+ * - Skeleton screens for loading states
+ * - Mobile-first responsive utilities
+ * - Print styles
+ */
+
+/* ========================================================================
+   1. CUMULATIVE LAYOUT SHIFT (CLS) PREVENTION
+   ======================================================================== */
+
+/* Reserve space for images with aspect ratio containers */
+.image-container {
+  position: relative;
+  width: 100%;
+  background: linear-gradient(135deg, #2A1810 0%, #3D2517 100%);
+  overflow: hidden;
+}
+
+/* 3:2 aspect ratio (standard photo) */
+.image-container--3-2 {
+  padding-bottom: 66.67%; /* 2/3 = 0.6667 */
+}
+
+/* 16:9 aspect ratio (widescreen) */
+.image-container--16-9 {
+  padding-bottom: 56.25%; /* 9/16 = 0.5625 */
+}
+
+/* 1:1 aspect ratio (square) */
+.image-container--1-1 {
+  padding-bottom: 100%;
+}
+
+/* 4:3 aspect ratio */
+.image-container--4-3 {
+  padding-bottom: 75%; /* 3/4 = 0.75 */
+}
+
+/* Image fills container */
+.image-container img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* ========================================================================
+   2. SKELETON SCREENS (Loading placeholders)
+   ======================================================================== */
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Skeleton variants */
+.skeleton--text {
+  height: 1em;
+  margin-bottom: 0.5em;
+}
+
+.skeleton--text-sm {
+  height: 0.875em;
+  width: 60%;
+}
+
+.skeleton--title {
+  height: 1.5em;
+  width: 80%;
+  margin-bottom: 0.75em;
+}
+
+.skeleton--avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+}
+
+.skeleton--button {
+  height: 44px;
+  width: 120px;
+  border-radius: 9999px;
+}
+
+.skeleton--card {
+  height: 200px;
+  border-radius: 16px;
+}
+
+/* Skeleton grid for shop cards */
+.skeleton-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.75rem;
+}
+
+/* ========================================================================
+   3. RESPONSIVE IMAGE UTILITIES
+   ======================================================================== */
+
+/* Responsive image base */
+.img-responsive {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* Object fit utilities */
+.img-cover {
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
+}
+
+.img-contain {
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+/* Lazy loading indicator */
+img[loading="lazy"] {
+  background: linear-gradient(135deg, #2A1810 0%, #3D2517 100%);
+}
+
+/* Fade in animation for lazy-loaded images */
+img.lazy-loaded {
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ========================================================================
+   4. MOBILE-FIRST RESPONSIVE UTILITIES
+   ======================================================================== */
+
+/* Mobile-first container */
+.container-fluid {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+@media (min-width: 640px) {
+  .container-fluid {
+    padding: 0 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .container-fluid {
+    padding: 0 2rem;
+  }
+}
+
+/* Hide on specific breakpoints */
+@media (max-width: 639px) {
+  .hide-mobile {
+    display: none !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .hide-tablet {
+    display: none !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .hide-desktop {
+    display: none !important;
+  }
+}
+
+/* Show on specific breakpoints */
+.show-mobile {
+  display: none !important;
+}
+
+.show-tablet {
+  display: none !important;
+}
+
+.show-desktop {
+  display: none !important;
+}
+
+@media (max-width: 639px) {
+  .show-mobile {
+    display: block !important;
+  }
+}
+
+@media (min-width: 640px) and (max-width: 1023px) {
+  .show-tablet {
+    display: block !important;
+  }
+}
+
+@media (min-width: 1024px) {
+  .show-desktop {
+    display: block !important;
+  }
+}
+
+/* ========================================================================
+   5. GRID SYSTEM (Mobile-first)
+   ======================================================================== */
+
+/* Base grid - single column on mobile */
+.grid-auto {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+/* 2 columns on tablet+ */
+@media (min-width: 640px) {
+  .grid-auto {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* 3 columns on desktop+ */
+@media (min-width: 1024px) {
+  .grid-auto {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* 4 columns on large desktop */
+@media (min-width: 1280px) {
+  .grid-auto {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* Fixed column grids */
+.grid-2 {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.grid-3 {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ========================================================================
+   6. SPACING UTILITIES (8px grid system)
+   ======================================================================== */
+
+/* Gap utilities */
+.gap-0 { gap: 0; }
+.gap-1 { gap: 0.25rem; }  /* 4px */
+.gap-2 { gap: 0.5rem; }   /* 8px */
+.gap-3 { gap: 0.75rem; }  /* 12px */
+.gap-4 { gap: 1rem; }     /* 16px */
+.gap-5 { gap: 1.25rem; }  /* 20px */
+.gap-6 { gap: 1.5rem; }   /* 24px */
+.gap-8 { gap: 2rem; }     /* 32px */
+.gap-10 { gap: 2.5rem; }  /* 40px */
+.gap-12 { gap: 3rem; }    /* 48px */
+
+/* Padding utilities */
+.p-0 { padding: 0; }
+.p-2 { padding: 0.5rem; }   /* 8px */
+.p-3 { padding: 0.75rem; }  /* 12px */
+.p-4 { padding: 1rem; }     /* 16px */
+.p-6 { padding: 1.5rem; }   /* 24px */
+.p-8 { padding: 2rem; }     /* 32px */
+
+/* Margin utilities */
+.m-0 { margin: 0; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-6 { margin-top: 1.5rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
+.mb-6 { margin-bottom: 1.5rem; }
+
+/* ========================================================================
+   7. TYPOGRAPHY UTILITIES
+   ======================================================================== */
+
+/* Text alignment */
+.text-left { text-align: left; }
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Font sizes (never below 16px for body text) */
+.text-xs { font-size: 0.75rem; }    /* 12px */
+.text-sm { font-size: 0.875rem; }   /* 14px */
+.text-base { font-size: 1rem; }     /* 16px */
+.text-lg { font-size: 1.125rem; }   /* 18px */
+.text-xl { font-size: 1.25rem; }    /* 20px */
+.text-2xl { font-size: 1.5rem; }    /* 24px */
+.text-3xl { font-size: 1.875rem; }  /* 30px */
+
+/* Line heights */
+.leading-tight { line-height: 1.25; }
+.leading-normal { line-height: 1.5; }
+.leading-relaxed { line-height: 1.625; }
+
+/* Font weights */
+.font-normal { font-weight: 400; }
+.font-medium { font-weight: 500; }
+.font-semibold { font-weight: 600; }
+.font-bold { font-weight: 700; }
+
+/* Text truncation */
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Multi-line truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ========================================================================
+   8. PRINT STYLES
+   ======================================================================== */
+
+@media print {
+  /* Hide non-essential elements */
+  .navbar-canvas,
+  .nav-menu,
+  .nav-actions,
+  .btn-pill-cta,
+  .btn-outline-pill,
+  .action-icon-btn,
+  .hero-visual-col,
+  .filters-sidebar,
+  .community-canvas-banner,
+  .footer {
+    display: none !important;
+  }
+
+  /* Reset backgrounds */
+  .app-outer-shell,
+  .app-canvas {
+    background: white !important;
+    box-shadow: none !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+  }
+
+  /* Reset text colors */
+  * {
+    color: black !important;
+    background: transparent !important;
+  }
+
+  /* Show URLs for links */
+  a[href]:after {
+    content: " (" attr(href) ")";
+    font-size: 0.8em;
+    color: #666;
+  }
+
+  /* Don't show URL for internal links */
+  a[href^="/"]:after,
+  a[href^="#"]:after {
+    content: "";
+  }
+
+  /* Page breaks */
+  .shop-card-canvas {
+    page-break-inside: avoid;
+  }
+
+  h1, h2, h3 {
+    page-break-after: avoid;
+  }
+
+  /* Optimize for print */
+  @page {
+    margin: 2cm;
+  }
+}
+
+/* ========================================================================
+   9. PERFORMANCE OPTIMIZATIONS
+   ======================================================================== */
+
+/* GPU acceleration for animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
+/* Reduce paint area */
+.contain-paint {
+  contain: paint;
+}
+
+.contain-layout {
+  contain: layout;
+}
+
+.contain-strict {
+  contain: strict;
+}
+
+/* Hardware acceleration for transforms */
+.gpu-accelerated {
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* ========================================================================
+   10. OFFLINE/LOADING STATES
+   ======================================================================== */
+
+/* Offline indicator */
+.offline-indicator {
+  position: fixed;
+  bottom: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(229, 138, 56, 0.95);
+  color: white;
+  padding: 0.75rem 1.5rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  z-index: 9999;
+  display: none;
+}
+
+.offline-indicator.is-visible {
+  display: block;
+  animation: slideInUp 0.3s ease-out;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+/* ========================================================================
+   11. UTILITY CLASSES
+   ======================================================================== */
+
+/* Display utilities */
+.flex { display: flex; }
+.inline-flex { display: inline-flex; }
+.block { display: block; }
+.inline-block { display: inline-block; }
+.hidden { display: none; }
+
+/* Flex utilities */
+.flex-col { flex-direction: column; }
+.flex-row { flex-direction: row; }
+.flex-wrap { flex-wrap: wrap; }
+.items-center { align-items: center; }
+.items-start { align-items: flex-start; }
+.items-end { align-items: flex-end; }
+.justify-center { justify-content: center; }
+.justify-between { justify-content: space-between; }
+.justify-start { justify-content: flex-start; }
+.justify-end { justify-content: flex-end; }
+
+/* Width utilities */
+.w-full { width: 100%; }
+.w-auto { width: auto; }
+.max-w-full { max-width: 100%; }
+
+/* Height utilities */
+.h-full { height: 100%; }
+.h-screen { height: 100vh; }
+.min-h-screen { min-height: 100vh; }
+
+/* Border radius */
+.rounded { border-radius: 4px; }
+.rounded-md { border-radius: 8px; }
+.rounded-lg { border-radius: 12px; }
+.rounded-xl { border-radius: 16px; }
+.rounded-full { border-radius: 9999px; }
+
+/* Overflow */
+.overflow-hidden { overflow: hidden; }
+.overflow-auto { overflow: auto; }
+.overflow-x-auto { overflow-x: auto; }
+.overflow-y-auto { overflow-y: auto; }
+
+/* Cursor */
+.cursor-pointer { cursor: pointer; }
+.cursor-not-allowed { cursor: not-allowed; }
+
+/* Select */
+.select-none { user-select: none; }
+.select-text { user-select: text; }

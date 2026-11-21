@@ -1,0 +1,1 @@
+"""API package Coffee Manic."""

@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+.pytest_cache/
+.mypy_cache/
+
+# Environment / secrets
+.env
+*.local
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Node
+node_modules/
+dist/
+.vite/
+npm-debug.log*
+
+# Editors / OS
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+
+# Logs
+*.log
+
+# Markdown: ignore dokumen tambahan kecuali dokumentasi yang dipakai proyek.
+*.md
+!/AGENTS.md
+!/CHANGELOG.md
+!/PRD.md
+!/PROJECT_CONTEXT.md
+!/PROJECT_STATUS.md
+!/README.md
+!/.agents/skills/seo-content-craft/SKILL.md
+!/.agents/skills/web-promo-motion/SKILL.md
+!/.ai/skills/anti-slop-ui/SKILL.md
+!/.ai/skills/backend-flask/SKILL.md
+!/.ai/skills/data-research/SKILL.md
+!/.ai/skills/database-engineer/SKILL.md
+!/.ai/skills/frontend-react/SKILL.md
+!/.ai/skills/project-context/SKILL.md
+!/.ai/skills/qa-testing/SKILL.md
+!/.ai/skills/token-efficiency/SKILL.md
+!/.ai/skills/ui-ux-design/SKILL.md
+!/.ai/skills/ui-ux-pro-max/SKILL.md
+!/.ai/skills/ui-ux-pro-max/references/pro-rules.md
+!/.ai/skills/ui-ux-pro-max/references/quick-reference.md
+!/backend/README.md
+!/research/data_dictionary.md
+!/tests/README.md

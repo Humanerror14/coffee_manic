@@ -1,0 +1,722 @@
+/**
+ * typography.css
+ * Phase 3 — Typography System & Animation Polish untuk Coffee Manic
+ * Tanggal: 7 November 2026
+ *
+ * Includes:
+ * - Design tokens (CSS custom properties)
+ * - Typography scale (Minor Third 1.200)
+ * - Easing functions (custom curves)
+ * - Animation timing standards
+ * - Page transition animations
+ * - Scroll reveal utilities
+ */
+
+/* ========================================================================
+   1. DESIGN TOKENS
+   ======================================================================== */
+
+:root {
+  /* ===== Font Families ===== */
+  --font-serif: 'Playfair Display', Georgia, 'Times New Roman', serif;
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+
+  /* ===== Type Scale (Minor Third 1.200) ===== */
+  --text-xs: 0.75rem;     /* 12px — Metadata, timestamps, captions */
+  --text-sm: 0.875rem;    /* 14px — Secondary text, labels */
+  --text-base: 1rem;      /* 16px — Body text (NEVER smaller) */
+  --text-lg: 1.125rem;    /* 18px — Emphasized body, lead text */
+  --text-xl: 1.25rem;     /* 20px — Subheadings, card titles */
+  --text-2xl: 1.5rem;     /* 24px — Section headings */
+  --text-3xl: 1.875rem;   /* 30px — Page titles (mobile) */
+  --text-4xl: 2.25rem;    /* 36px — Hero titles (tablet) */
+  --text-5xl: 3rem;       /* 48px — Hero titles (desktop) */
+  --text-6xl: 3.75rem;    /* 60px — Display headings */
+
+  /* ===== Line Heights ===== */
+  --leading-none: 1;
+  --leading-tight: 1.25;    /* Headings */
+  --leading-snug: 1.375;    /* Subheadings */
+  --leading-normal: 1.5;    /* Body text (minimum for readability) */
+  --leading-relaxed: 1.625; /* Long-form content */
+  --leading-loose: 2;       /* Spacious text */
+
+  /* ===== Font Weights ===== */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+
+  /* ===== Letter Spacing ===== */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+
+  /* ===== Easing Functions ===== */
+  --ease-linear: linear;
+  --ease-in: cubic-bezier(0.32, 0, 0.67, 0);
+  --ease-out: cubic-bezier(0.33, 1, 0.68, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* Custom easing curves (coffee-themed) */
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);           /* Standard smooth */
+  --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55); /* Playful bounce */
+  --ease-coffee-pour: cubic-bezier(0.25, 0.46, 0.45, 0.94); /* Smooth cascade */
+  --ease-steam-rise: cubic-bezier(0.34, 1.56, 0.64, 1);    /* Gentle lift */
+
+  /* ===== Animation Durations ===== */
+  --duration-instant: 0ms;
+  --duration-fast: 150ms;     /* Micro-interactions */
+  --duration-normal: 250ms;   /* Standard transitions */
+  --duration-slow: 350ms;     /* Page transitions */
+  --duration-slower: 500ms;   /* Choreography */
+  --duration-slowest: 800ms;  /* Loading states */
+
+  /* ===== Spacing Scale (8px grid) ===== */
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px — Standard */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  --space-20: 5rem;     /* 80px */
+  --space-24: 6rem;     /* 96px */
+
+  /* ===== Border Radius ===== */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+}
+
+/* ========================================================================
+   2. TYPOGRAPHY BASE
+   ======================================================================== */
+
+/* Body text — NEVER below 16px */
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: var(--leading-normal);
+  font-weight: var(--font-normal);
+  color: var(--color-text-main);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Headings — Serif font, tight line-height */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-serif);
+  font-weight: var(--font-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+/* Heading sizes */
+h1, .text-h1 {
+  font-size: var(--text-4xl);
+}
+
+h2, .text-h2 {
+  font-size: var(--text-3xl);
+}
+
+h3, .text-h3 {
+  font-size: var(--text-2xl);
+}
+
+h4, .text-h4 {
+  font-size: var(--text-xl);
+}
+
+h5, .text-h5 {
+  font-size: var(--text-lg);
+}
+
+h6, .text-h6 {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+}
+
+/* Responsive headings */
+@media (min-width: 768px) {
+  h1, .text-h1 {
+    font-size: var(--text-5xl);
+  }
+
+  h2, .text-h2 {
+    font-size: var(--text-4xl);
+  }
+
+  h3, .text-h3 {
+    font-size: var(--text-3xl);
+  }
+}
+
+@media (min-width: 1024px) {
+  h1, .text-h1 {
+    font-size: var(--text-6xl);
+  }
+}
+
+/* Paragraph */
+p {
+  margin: 0 0 var(--space-4);
+  line-height: var(--leading-normal);
+}
+
+/* Lead text (intro paragraphs) */
+.lead, .text-lead {
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--font-normal);
+}
+
+/* Small text */
+small, .text-small {
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* Caption text */
+.caption, .text-caption {
+  font-size: var(--text-xs);
+  line-height: var(--leading-normal);
+  color: var(--color-text-muted);
+}
+
+/* ========================================================================
+   3. TEXT UTILITIES
+   ======================================================================== */
+
+/* Font family */
+.font-serif { font-family: var(--font-serif); }
+.font-sans { font-family: var(--font-sans); }
+.font-mono { font-family: var(--font-mono); }
+
+/* Font size */
+.text-xs { font-size: var(--text-xs); }
+.text-sm { font-size: var(--text-sm); }
+.text-base { font-size: var(--text-base); }
+.text-lg { font-size: var(--text-lg); }
+.text-xl { font-size: var(--text-xl); }
+.text-2xl { font-size: var(--text-2xl); }
+.text-3xl { font-size: var(--text-3xl); }
+.text-4xl { font-size: var(--text-4xl); }
+.text-5xl { font-size: var(--text-5xl); }
+
+/* Font weight */
+.font-normal { font-weight: var(--font-normal); }
+.font-medium { font-weight: var(--font-medium); }
+.font-semibold { font-weight: var(--font-semibold); }
+.font-bold { font-weight: var(--font-bold); }
+
+/* Line height */
+.leading-none { line-height: var(--leading-none); }
+.leading-tight { line-height: var(--leading-tight); }
+.leading-snug { line-height: var(--leading-snug); }
+.leading-normal { line-height: var(--leading-normal); }
+.leading-relaxed { line-height: var(--leading-relaxed); }
+.leading-loose { line-height: var(--leading-loose); }
+
+/* Letter spacing */
+.tracking-tighter { letter-spacing: var(--tracking-tighter); }
+.tracking-tight { letter-spacing: var(--tracking-tight); }
+.tracking-normal { letter-spacing: var(--tracking-normal); }
+.tracking-wide { letter-spacing: var(--tracking-wide); }
+.tracking-wider { letter-spacing: var(--tracking-wider); }
+
+/* Text transform */
+.uppercase { text-transform: uppercase; }
+.lowercase { text-transform: lowercase; }
+.capitalize { text-transform: capitalize; }
+.normal-case { text-transform: none; }
+
+/* Text decoration */
+.underline { text-decoration: underline; }
+.line-through { text-decoration: line-through; }
+.no-underline { text-decoration: none; }
+
+/* ========================================================================
+   4. ANIMATION TIMING STANDARDS
+   ======================================================================== */
+
+/*
+ * Animation Timing Guidelines:
+ *
+ * Micro-interactions (hover, focus): 150–200ms
+ * Transitions (page nav, modal): 250–350ms
+ * Choreography (staggered reveals): 400–600ms
+ * Loading states: 800–1200ms
+ */
+
+/* Base transition for interactive elements */
+.transition-base {
+  transition-property: background-color, border-color, color, fill, stroke, opacity, box-shadow, transform;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Color transition */
+.transition-colors {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-duration: var(--duration-fast);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Transform transition */
+.transition-transform {
+  transition-property: transform;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+/* Opacity transition */
+.transition-opacity {
+  transition-property: opacity;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+/* All properties (use sparingly) */
+.transition-all {
+  transition-property: all;
+  transition-duration: var(--duration-normal);
+  transition-timing-function: var(--ease-out);
+}
+
+/* No transition */
+.transition-none {
+  transition: none;
+}
+
+/* ========================================================================
+   5. PAGE TRANSITION ANIMATIONS
+   ======================================================================== */
+
+/* Page transition wrapper */
+.page-transition {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-out);
+  animation-fill-mode: both;
+}
+
+/* Page exit animation */
+.page-transition--exit {
+  animation-name: pageExit;
+}
+
+/* Page enter animation */
+.page-transition--enter {
+  animation-name: pageEnter;
+}
+
+@keyframes pageExit {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes pageEnter {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================================================
+   6. SCROLL REVEAL ANIMATIONS
+   ======================================================================== */
+
+/* Base reveal animation */
+.reveal {
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity var(--duration-slower) var(--ease-out),
+              transform var(--duration-slower) var(--ease-out);
+}
+
+/* Revealed state */
+.reveal.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered children */
+.reveal-stagger > * {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.reveal-stagger.is-revealed > *:nth-child(1) { transition-delay: 0ms; }
+.reveal-stagger.is-revealed > *:nth-child(2) { transition-delay: 80ms; }
+.reveal-stagger.is-revealed > *:nth-child(3) { transition-delay: 160ms; }
+.reveal-stagger.is-revealed > *:nth-child(4) { transition-delay: 240ms; }
+.reveal-stagger.is-revealed > *:nth-child(5) { transition-delay: 320ms; }
+.reveal-stagger.is-revealed > *:nth-child(6) { transition-delay: 400ms; }
+
+.reveal-stagger.is-revealed > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Slide in from left */
+.slide-in-left {
+  opacity: 0;
+  transform: translateX(-32px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.slide-in-left.is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Slide in from right */
+.slide-in-right {
+  opacity: 0;
+  transform: translateX(32px);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.slide-in-right.is-revealed {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* Scale up */
+.scale-up {
+  opacity: 0;
+  transform: scale(0.95);
+  transition: opacity var(--duration-slow) var(--ease-out),
+              transform var(--duration-slow) var(--ease-out);
+}
+
+.scale-up.is-revealed {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ========================================================================
+   7. MICRO-INTERACTIONS
+   ======================================================================== */
+
+/* Button hover lift (desktop only) */
+@media (hover: hover) and (pointer: fine) {
+  .hover-lift {
+    transition: transform var(--duration-fast) var(--ease-out),
+                box-shadow var(--duration-fast) var(--ease-out);
+  }
+
+  .hover-lift:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  }
+
+  .hover-lift:active {
+    transform: translateY(0);
+    transition-duration: 50ms;
+  }
+}
+
+/* Icon rotate on hover */
+@media (hover: hover) {
+  .hover-rotate {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .hover-rotate:hover {
+    transform: rotate(45deg);
+  }
+}
+
+/* Scale on hover */
+@media (hover: hover) {
+  .hover-scale {
+    transition: transform var(--duration-fast) var(--ease-out);
+  }
+
+  .hover-scale:hover {
+    transform: scale(1.05);
+  }
+}
+
+/* Pulse animation */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+.animate-pulse {
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(-25%);
+    animation-timing-function: cubic-bezier(0.8, 0, 1, 1);
+  }
+  50% {
+    transform: translateY(0);
+    animation-timing-function: cubic-bezier(0, 0, 0.2, 1);
+  }
+}
+
+.animate-bounce {
+  animation: bounce 1s infinite;
+}
+
+/* Spin animation */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Ping animation */
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.animate-ping {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+/* ========================================================================
+   8. LOADING ANIMATIONS
+   ======================================================================== */
+
+/* Spinner */
+.spinner {
+  width: 20px;
+  height: 20px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.spinner--sm {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+.spinner--lg {
+  width: 32px;
+  height: 32px;
+  border-width: 3px;
+}
+
+/* Dots loader */
+@keyframes dots {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.dots-loader {
+  display: flex;
+  gap: 6px;
+}
+
+.dots-loader span {
+  width: 8px;
+  height: 8px;
+  background: currentColor;
+  border-radius: 50%;
+  animation: dots 1.4s infinite ease-in-out both;
+}
+
+.dots-loader span:nth-child(1) {
+  animation-delay: -0.32s;
+}
+
+.dots-loader span:nth-child(2) {
+  animation-delay: -0.16s;
+}
+
+/* Progress bar */
+@keyframes progress {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(100%);
+  }
+}
+
+.progress-bar {
+  height: 2px;
+  background: rgba(229, 138, 56, 0.3);
+  overflow: hidden;
+}
+
+.progress-bar::after {
+  content: '';
+  display: block;
+  width: 100%;
+  height: 100%;
+  background: #E58A38;
+  animation: progress 1.5s ease-in-out infinite;
+}
+
+/* ========================================================================
+   9. REDUCED MOTION SUPPORT (MANDATORY)
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Disable all reveal animations */
+  .reveal,
+  .reveal-stagger > *,
+  .slide-in-left,
+  .slide-in-right,
+  .scale-up {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  /* Disable hover effects */
+  @media (hover: hover) {
+    .hover-lift:hover,
+    .hover-rotate:hover,
+    .hover-scale:hover {
+      transform: none;
+    }
+  }
+
+  /* Disable loading animations */
+  .spinner,
+  .dots-loader span,
+  .progress-bar::after {
+    animation: none;
+  }
+}
+
+/* ========================================================================
+   10. FOCUS STYLES (Enhanced)
+   ======================================================================== */
+
+/* Focus ring with animation */
+.focus-ring {
+  outline: none;
+}
+
+.focus-ring:focus-visible {
+  outline: 3px solid #E58A38;
+  outline-offset: 2px;
+  border-radius: 4px;
+  animation: focusRing var(--duration-fast) var(--ease-out);
+}
+
+@keyframes focusRing {
+  from {
+    outline-offset: 0;
+    opacity: 0;
+  }
+  to {
+    outline-offset: 2px;
+    opacity: 1;
+  }
+}
+
+/* Focus within for containers */
+.focus-within-ring:focus-within {
+  box-shadow: 0 0 0 3px rgba(229, 138, 56, 0.2);
+}
+
+/* ========================================================================
+   11. SPECIAL EFFECTS (Use sparingly)
+   ======================================================================== */
+
+/* Gradient text */
+.text-gradient {
+  background: linear-gradient(135deg, #E58A38 0%, #C96B1F 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Glow effect */
+.glow {
+  box-shadow: 0 0 20px rgba(229, 138, 56, 0.3),
+              0 0 40px rgba(229, 138, 56, 0.2),
+              0 0 60px rgba(229, 138, 56, 0.1);
+}
+
+/* Shimmer effect (for loading states) */
+@keyframes shimmer {
+  from {
+    background-position: -200% 0;
+  }
+  to {
+    background-position: 200% 0;
+  }
+}
+
+.shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.05) 0%,
+    rgba(255, 255, 255, 0.1) 50%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}

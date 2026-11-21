@@ -1,0 +1,505 @@
+/**
+ * accessibility.css
+ * Phase 1 — Critical accessibility & touch fixes untuk Coffee Manic
+ * Tanggal: 7 November 2026
+ *
+ * Includes:
+ * - Focus states (focus-visible) untuk keyboard navigation
+ * - Skip-to-main link
+ * - Touch target sizing (44×44px minimum)
+ * - Touch spacing (8px minimum)
+ * - Safe area insets (iPhone notch)
+ * - Reduced motion fallbacks
+ * - Overflow prevention
+ */
+
+/* ========================================================================
+   1. GLOBAL OVERFLOW & SAFE AREAS
+   ======================================================================== */
+
+html {
+  overflow-x: clip; /* Prevent horizontal scroll */
+}
+
+body {
+  overflow-x: clip;
+  max-width: 100vw;
+}
+
+.app-outer-shell {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+.app-canvas {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+/* ========================================================================
+   2. SKIP-TO-MAIN LINK (Accessibility)
+   ======================================================================== */
+
+.skip-to-main {
+  position: absolute;
+  top: -100px;
+  left: 0;
+  z-index: 9999;
+  padding: 12px 24px;
+  background: #2A1810;
+  color: #FAF6EE;
+  text-decoration: none;
+  border-radius: 0 0 8px 0;
+  font-size: 14px;
+  font-weight: 500;
+  transition: top 0.2s ease-out;
+}
+
+.skip-to-main:focus {
+  top: 0;
+  outline: 3px solid #E58A38;
+  outline-offset: 2px;
+}
+
+/* ========================================================================
+   3. FOCUS STATES (CRITICAL — Never remove)
+   ======================================================================== */
+
+/* Global focus-visible standard */
+*:focus-visible {
+  outline: 3px solid #E58A38;
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Override for inputs — outline inside */
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid #E58A38;
+  outline-offset: 2px;
+}
+
+/* Buttons & links — outline outside */
+button:focus-visible,
+a:focus-visible,
+.btn-pill-cta:focus-visible,
+.btn-outline-pill:focus-visible,
+.category-pill-outline:focus-visible,
+.action-icon-btn:focus-visible,
+.nav-link:focus-visible {
+  outline: 3px solid #E58A38;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Enhanced focus for CTA buttons */
+.btn-pill-cta:focus-visible {
+  outline: 3px solid #E58A38;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px rgba(229, 138, 56, 0.15);
+}
+
+/* ========================================================================
+   4. TOUCH TARGET SIZES (Minimum 44×44px)
+   ======================================================================== */
+
+/* Navigation links */
+.nav-link {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 16px;
+}
+
+/* Action buttons */
+.action-icon-btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease-out, transform 0.15s ease-out;
+}
+
+/* CTA pills */
+.btn-pill-cta,
+.btn-outline-pill {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 24px;
+  border-radius: 32px;
+}
+
+/* Category pills */
+.category-pill-outline {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  padding: 12px 20px;
+  font-size: 15px;
+  line-height: 1.4;
+}
+
+/* Form inputs */
+.form-input,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+textarea,
+select {
+  min-height: 48px;
+  padding: 12px 16px;
+  font-size: 16px; /* Never < 16px to prevent zoom on iOS */
+}
+
+/* ========================================================================
+   5. TOUCH SPACING (Minimum 8px between interactive elements)
+   ======================================================================== */
+
+/* Navigation */
+.nav-menu {
+  display: flex;
+  gap: 8px;
+}
+
+/* Category pills wrapper */
+.tray-pills-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px; /* 12px > 8px minimum */
+}
+
+/* Shop pills row */
+.shop-pills-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+/* Hero actions cluster */
+.hero-actions-cluster {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (min-width: 640px) {
+  .hero-actions-cluster {
+    flex-direction: row;
+    gap: 16px;
+  }
+}
+
+/* Button groups */
+.auth-pill-group {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+/* Form fields */
+.form-field {
+  margin-bottom: 24px;
+}
+
+/* ========================================================================
+   6. TOUCH INTERACTION (No hover-only states, prevent mis-taps)
+   ======================================================================== */
+
+/* Disable double-tap zoom on interactive elements */
+.btn-pill-cta,
+.btn-outline-pill,
+.category-pill-outline,
+.action-icon-btn,
+button,
+a {
+  touch-action: manipulation; /* Prevents 300ms delay + double-tap zoom */
+  user-select: none; /* Prevent text selection on long press */
+  -webkit-user-select: none;
+}
+
+/* Allow normal scrolling on content */
+.shop-card,
+.hero-editorial-desc,
+.page-desc,
+p {
+  touch-action: pan-y pinch-zoom;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* ========================================================================
+   7. LOADING & DISABLED STATES
+   ======================================================================== */
+
+button:disabled,
+.button:disabled,
+.btn-pill-cta:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Loading spinner */
+.spinner {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: currentColor;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Aria-busy indicator */
+[aria-busy="true"] {
+  opacity: 0.7;
+}
+
+/* ========================================================================
+   8. SCREEN READER ONLY TEXT
+   ======================================================================== */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+/* ========================================================================
+   9. HOVER STATES (Desktop only — respect touch devices)
+   ======================================================================== */
+
+@media (hover: hover) and (pointer: fine) {
+  /* Button hover */
+  .btn-pill-cta:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(229, 138, 56, 0.25);
+    transition: transform 0.2s cubic-bezier(0.33, 1, 0.68, 1),
+                box-shadow 0.2s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  .btn-outline-pill:hover {
+    background-color: rgba(229, 138, 56, 0.08);
+    border-color: #E58A38;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  /* Shop card hover */
+  .shop-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 32px rgba(20, 10, 5, 0.15);
+    transition: transform 0.3s cubic-bezier(0.33, 1, 0.68, 1),
+                box-shadow 0.3s cubic-bezier(0.33, 1, 0.68, 1);
+  }
+
+  /* Category pill hover */
+  .category-pill-outline:hover {
+    background-color: rgba(229, 138, 56, 0.08);
+    border-color: #E58A38;
+    transition: background-color 0.2s, border-color 0.2s;
+  }
+
+  /* Icon button hover */
+  .action-icon-btn:hover {
+    background-color: rgba(229, 138, 56, 0.1);
+    transform: scale(1.05);
+    transition: background-color 0.15s, transform 0.15s;
+  }
+
+  /* Link hover */
+  a:hover {
+    text-decoration: underline;
+  }
+}
+
+/* ========================================================================
+   10. ACTIVE STATES (All devices)
+   ======================================================================== */
+
+.btn-pill-cta:active {
+  transform: scale(0.97);
+  transition-duration: 0.05s;
+}
+
+.btn-outline-pill:active {
+  transform: scale(0.97);
+}
+
+.action-icon-btn:active {
+  transform: scale(0.95);
+}
+
+/* ========================================================================
+   11. REDUCED MOTION SUPPORT (Mandatory for accessibility)
+   ======================================================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  /* Keep focus visible even with reduced motion */
+  *:focus-visible {
+    outline: 3px solid #E58A38;
+    outline-offset: 3px;
+    transition: none;
+  }
+
+  /* Disable hover transforms */
+  @media (hover: hover) {
+    .btn-pill-cta:hover {
+      transform: none;
+    }
+
+    .shop-card:hover {
+      transform: none;
+    }
+
+    .action-icon-btn:hover {
+      transform: none;
+    }
+  }
+}
+
+/* ========================================================================
+   12. ARIA LIVE REGIONS (Status messages for screen readers)
+   ======================================================================== */
+
+[role="status"],
+[role="alert"] {
+  position: relative;
+  display: block;
+}
+
+.state-text,
+.canvas-alert-box {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* ========================================================================
+   13. FORM FIELD FOCUS MANAGEMENT
+   ======================================================================== */
+
+.form-field input:focus,
+.form-field textarea:focus {
+  background-color: #FFFBF7;
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #2A1810;
+}
+
+.required-indicator {
+  color: #F44336;
+  margin-left: 4px;
+}
+
+.form-error {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 14px;
+  color: #C62828;
+}
+
+/* ========================================================================
+   14. RESPONSIVE IMAGE HANDLING
+   ======================================================================== */
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+picture {
+  display: block;
+}
+
+/* Prevent layout shift with aspect ratio containers */
+.shop-card-image-wrapper,
+.hero-visual-col {
+  position: relative;
+  width: 100%;
+}
+
+/* ========================================================================
+   15. TEXT SELECTION & COPYING
+   ======================================================================== */
+
+.shop-name,
+.hero-editorial-title,
+.section-heading-serif,
+p {
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+button,
+.btn-pill-cta,
+.action-icon-btn {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ========================================================================
+   16. NAVBAR SAFE AREA
+   ======================================================================== */
+
+.navbar-canvas {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  padding-top: calc(16px + env(safe-area-inset-top));
+  padding-bottom: 16px;
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+}
+
+/* ========================================================================
+   17. PRINT STYLES (Accessibility consideration)
+   ======================================================================== */
+
+@media print {
+  .skip-to-main,
+  .action-icon-btn,
+  .navbar-canvas {
+    display: none;
+  }
+
+  a[href]::after {
+    content: " (" attr(href) ")";
+  }
+}
