@@ -2,6 +2,21 @@
 
 Status terakhir diperbarui: **21 November 2026**
 
+## CI GitHub Actions — 21 November 2026
+
+- Workflow `.github/workflows/ci.yml` mencakup frontend Node.js 22 dan backend
+  Python 3.14 dengan matrix SQLite/PostgreSQL 16, termasuk pemeriksaan migrasi.
+- Pemicu mencakup push ke `main`, pull request menuju `main`, dan eksekusi
+  manual. Token workflow dibatasi ke akses baca dengan action dipatok ke commit.
+- Verifikasi lokal berhasil untuk 36 test backend, test frontend, build Vite,
+  `pip check`, serta migrasi SQLite hingga `ca828909c9ee`. Struktur YAML dan
+  sintaks shell juga diperiksa.
+- Eksekusi pertama di GitHub dan job PostgreSQL masih perlu dikonfirmasi.
+  Akses Docker dari lingkungan lokal sesi ini ditolak. Petunjuk aktivasi serta
+  proteksi branch ada di `README.md`.
+- Root `package.json` juga menyediakan `test:frontend`, `test:backend`, dan
+  `test`. Script backend memerlukan environment Python proyek yang aktif.
+
 ## Perbaikan komposisi frontend — 21 November 2026
 
 - Pencarian ditempatkan di hero espresso bersama judul dan ilustrasi kopi saring.

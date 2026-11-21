@@ -4,6 +4,14 @@ Semua perubahan penting pada proyek ini dicatat di sini. Format mengikuti [Keep 
 
 ## [Unreleased]
 
+### Added — Continuous integration GitHub Actions, 21 November 2026
+
+- Tambahkan test dan build frontend serta test backend pada SQLite/PostgreSQL
+  16, dengan pemeriksaan migrasi dan cache dependency.
+- Tambahkan pemicu push/pull request ke `main` dan pemicuan manual. Sertakan
+  panduan aktivasi, proteksi branch, dan alternatif Jenkins di `README.md`.
+- Root `package.json` menyediakan helper `test:frontend`, `test:backend`, dan `test`.
+
 ### Changed — Perbaikan komposisi frontend, 21 November 2026
 
 - Satukan pencarian dan judul di hero espresso, dengan empat filter yang dapat
