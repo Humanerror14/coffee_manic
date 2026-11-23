@@ -7,8 +7,10 @@
     "backend": "./backend/.venv/bin/python backend/run.py",
     "build": "npm --prefix frontend run build",
     "preview": "npm --prefix frontend run preview",
+    "start": "npx --yes serve -s frontend/dist -l ${PORT:-3000}",
+    "postinstall": "npm --prefix frontend install",
     "test:frontend": "npm --prefix frontend test",
-    "test:backend": "PYTHONPATH=backend pytest backend/tests",
+    "test:backend": "PYTHONPATH=backend ./backend/.venv/bin/pytest backend/tests 2>/dev/null || PYTHONPATH=backend pytest backend/tests",
     "test": "npm run test:frontend && npm run test:backend"
   }
 }

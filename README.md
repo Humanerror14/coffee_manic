@@ -107,6 +107,42 @@ Request berlebih mendapat HTTP `429` dengan header `Retry-After` dalam detik.
 Endpoint health dan preflight `OPTIONS` tidak menghabiskan kuota.
 Lihat `backend/README.md` untuk batasan multi-worker dan reverse proxy.
 
+## Continuous integration
+
+Workflow GitHub Actions ada di `.github/workflows/ci.yml`. Workflow berjalan
+saat ada push ke `main`, pull request menuju `main`, atau pemicuan manual melalui
+tab **Actions → CI → Run workflow**.
+
+- **Frontend** memakai Node.js 22, menjalankan `npm ci`, `npm test`, dan
+  `npm run build` dari direktori `frontend`.
+- **Backend (sqlite)** memakai Python 3.14 dan database SQLite sementara untuk
+  test serta pemeriksaan migrasi.
+- **Backend (postgresql)** menjalankan test dan migrasi pada container
+  PostgreSQL 16 sementara. Kredensial di workflow hanya untuk container CI.
+
+Ketiga job harus berhasil agar workflow hijau. CI memakai `FLASK_ENV=testing`
+dan `TEST_DATABASE_URL` terpisah. Secret Supabase atau file `.env` produksi
+tidak diperlukan.
+
+Untuk mengaktifkannya, commit file workflow dan push ke GitHub, lalu periksa
+hasilnya pada tab **Actions**. Setelah pemeriksaan pertama tersedia, atur
+proteksi branch atau ruleset `main` dengan **Require status checks to pass**
+untuk job `Frontend`, `Backend (sqlite)`, dan `Backend (postgresql)`.
+
+Pemeriksaan test dan build dapat diulang secara lokal dari root proyek.
+
+```bash
+(cd frontend && npm ci && npm test && npm run build)
+(cd backend && FLASK_ENV=testing TEST_DATABASE_URL=sqlite:///:memory: .venv/bin/python -m pytest -q)
+```
+
+Jika memakai Jenkins, siapkan agent dengan Node.js 22 dan Python 3.14, lalu
+buat Pipeline dari SCM dengan repository ini sebagai sumber. Jalankan tahap
+instalasi dependency, test frontend, build frontend, dan test backend dengan
+environment pengujian yang sama. Pengujian PostgreSQL memerlukan database
+sementara pada agent. Workflow yang disertakan di proyek ini memakai GitHub
+Actions.
+
 ## Dokumentasi lanjutan
 
 - `PRD.md` — kebutuhan produk, scope, fitur, kriteria MVP
