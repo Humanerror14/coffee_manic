@@ -4,6 +4,12 @@ Semua perubahan penting pada proyek ini dicatat di sini. Format mengikuti [Keep 
 
 ## [Unreleased]
 
+### Added — Dockerization & Single-Container Production Build, 23 November 2026
+- Menambahkan [`Dockerfile`](file:///home/ull/coffee_manic/Dockerfile) multi-stage (Node 20 builder + Python 3.12 runner) untuk deployment monorepo satu container di Cloudvea / VPS.
+- Menambahkan [`.dockerignore`](file:///home/ull/coffee_manic/.dockerignore) untuk memfilter dependensi lokal dan cache.
+- Memperbarui [`docker-compose.yml`](file:///home/ull/coffee_manic/docker-compose.yml) dengan service `web` terintegrasi.
+- Menambahkan handler SPA di [`backend/app/__init__.py`](file:///home/ull/coffee_manic/backend/app/__init__.py) agar Flask menyajikan bundle frontend `frontend/dist` di luar lingkungan testing.
+
 ### Added — Continuous integration GitHub Actions, 21 November 2026
 
 - Tambahkan test dan build frontend serta test backend pada SQLite/PostgreSQL

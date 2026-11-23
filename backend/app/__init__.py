@@ -1,4 +1,6 @@
 """Aplikasi Flask Coffee Manic — application factory."""
+import os
+from pathlib import Path
 from flask import Flask, jsonify
 from flask_jwt_extended.exceptions import JWTExtendedException
 from sqlalchemy.exc import SQLAlchemyError
@@ -23,6 +25,7 @@ def create_app(config_name: str | None = None):
     _register_blueprints(app)
     _register_error_handlers(app)
     _register_cli(app)
+    _register_frontend_spa(app)
 
     return app
 
@@ -76,3 +79,27 @@ def _register_cli(app: Flask):
         with app.app_context():
             run_seed()
         print("Seed selesai.")
+
+
+def _register_frontend_spa(app: Flask):
+    """Sajikan build statis frontend Vite jika direktori dist tersedia (misal di Docker/produksi)."""
+    if app.config.get("TESTING") or os.environ.get("FLASK_ENV") == "testing":
+        return
+
+    dist_dir = os.environ.get(
+        "FRONTEND_DIST_DIR",
+        str(Path(__file__).resolve().parent.parent.parent / "frontend" / "dist"),
+    )
+    if os.path.isdir(dist_dir):
+        from flask import send_from_directory
+        from werkzeug.exceptions import NotFound
+
+        @app.route("/", defaults={"path": ""})
+        @app.route("/<path:path>")
+        def serve_spa(path: str):
+            if path.startswith("api"):
+                raise NotFound()
+            file_path = os.path.join(dist_dir, path)
+            if path and os.path.isfile(file_path):
+                return send_from_directory(dist_dir, path)
+            return send_from_directory(dist_dir, "index.html")

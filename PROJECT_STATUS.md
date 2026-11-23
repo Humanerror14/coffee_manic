@@ -1,6 +1,13 @@
 # PROJECT_STATUS.md
 
-Status terakhir diperbarui: **21 November 2026**
+Status terakhir diperbarui: **23 November 2026**
+
+## Dukungan Docker & Deployment Multi-Stage — 23 November 2026
+
+- **Multi-Stage Dockerfile**: Menambahkan [`Dockerfile`](file:///home/ull/coffee_manic/Dockerfile) terintegrasi yang mem-build frontend (Node.js 20) dan mengemas backend (Python 3.12 Flask + Gunicorn) ke dalam satu container ringan (`python:3.12-slim`), cocok untuk Cloudvea, Render, Railway, maupun VPS.
+- **Dukungan Static SPA di Flask**: Menambahkan penyajian file statis `frontend/dist` di [`backend/app/__init__.py`](file:///home/ull/coffee_manic/backend/app/__init__.py) dengan fallback otomatis ke `index.html` (SPA routing) dan proteksi rute `/api/*` serta lingkungan testing.
+- **Docker Compose Lengkap**: Memperbarui [`docker-compose.yml`](file:///home/ull/coffee_manic/docker-compose.yml) dengan service `web` (app Flask + Vite terintegrasi) dan service `db` (Postgres 16) dengan healthcheck otomatis.
+- **Verifikasi**: 36 test backend, 13 test frontend, dan build Vite lolos 100%.
 
 ## CI GitHub Actions — 21 November 2026
 
